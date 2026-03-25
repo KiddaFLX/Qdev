@@ -1,0 +1,1007 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Qdev — Web Design & Development</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --black: #0a0a0a;
+      --off-white: #f5f2ec;
+      --cream: #ede9e0;
+      --accent: #d4ff00;
+      --accent2: #ff5533;
+      --mid: #2a2a2a;
+      --muted: #888;
+      --font-display: 'Syne', sans-serif;
+      --font-body: 'DM Sans', sans-serif;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--black);
+      color: var(--off-white);
+      font-family: var(--font-body);
+      font-weight: 300;
+      overflow-x: hidden;
+    }
+
+    /* ── NOISE OVERLAY ── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+      background-size: 200px 200px;
+      pointer-events: none;
+      z-index: 9999;
+      opacity: 0.4;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.4rem 4vw;
+      mix-blend-mode: normal;
+      background: rgba(10,10,10,0.6);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+
+    .logo {
+      font-family: var(--font-display);
+      font-weight: 800;
+      font-size: 1.5rem;
+      letter-spacing: -0.03em;
+      color: var(--accent);
+      text-decoration: none;
+    }
+    .logo span { color: var(--off-white); }
+
+    nav ul {
+      list-style: none;
+      display: flex;
+      gap: 2.5rem;
+    }
+
+    nav a {
+      color: var(--off-white);
+      text-decoration: none;
+      font-size: 0.85rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      opacity: 0.7;
+      transition: opacity 0.2s;
+    }
+    nav a:hover { opacity: 1; }
+
+    .nav-cta {
+      background: var(--accent);
+      color: var(--black) !important;
+      padding: 0.55rem 1.4rem;
+      border-radius: 2px;
+      font-weight: 500;
+      opacity: 1 !important;
+      transition: background 0.2s !important;
+    }
+    .nav-cta:hover { background: #c0e800 !important; }
+
+    /* ── HERO ── */
+    #hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 0 4vw 8vh;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-bg {
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 60% 50% at 80% 20%, rgba(212,255,0,0.07) 0%, transparent 60%),
+        radial-gradient(ellipse 40% 40% at 10% 80%, rgba(255,85,51,0.06) 0%, transparent 55%);
+    }
+
+    .hero-label {
+      font-size: 0.75rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 2rem;
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+    }
+    .hero-label::before {
+      content: '';
+      width: 2rem;
+      height: 1px;
+      background: var(--accent);
+    }
+
+    h1 {
+      font-family: var(--font-display);
+      font-weight: 800;
+      font-size: clamp(3.5rem, 9vw, 8rem);
+      line-height: 0.92;
+      letter-spacing: -0.03em;
+      max-width: 900px;
+    }
+
+    h1 em {
+      font-style: normal;
+      color: var(--accent);
+    }
+
+    .hero-sub {
+      margin-top: 2.5rem;
+      max-width: 480px;
+      font-size: 1.05rem;
+      line-height: 1.7;
+      color: rgba(245,242,236,0.65);
+      border-left: 2px solid var(--accent2);
+      padding-left: 1.2rem;
+    }
+
+    .hero-actions {
+      margin-top: 3rem;
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: var(--black);
+      padding: 1rem 2.4rem;
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 0.9rem;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      text-decoration: none;
+      border-radius: 2px;
+      transition: transform 0.2s, background 0.2s;
+      display: inline-block;
+    }
+    .btn-primary:hover { transform: translateY(-2px); background: #c0e800; }
+
+    .btn-outline {
+      border: 1px solid rgba(245,242,236,0.25);
+      color: var(--off-white);
+      padding: 1rem 2.4rem;
+      font-family: var(--font-display);
+      font-weight: 600;
+      font-size: 0.9rem;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      text-decoration: none;
+      border-radius: 2px;
+      transition: border-color 0.2s, background 0.2s;
+      display: inline-block;
+    }
+    .btn-outline:hover { border-color: var(--off-white); background: rgba(255,255,255,0.05); }
+
+    .hero-scroll {
+      position: absolute;
+      right: 4vw;
+      bottom: 8vh;
+      writing-mode: vertical-rl;
+      font-size: 0.7rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    .hero-scroll::after {
+      content: '';
+      width: 1px;
+      height: 5rem;
+      background: linear-gradient(to bottom, var(--muted), transparent);
+    }
+
+    /* ── MARQUEE ── */
+    .marquee-wrap {
+      background: var(--accent);
+      color: var(--black);
+      padding: 0.9rem 0;
+      overflow: hidden;
+      white-space: nowrap;
+    }
+    .marquee-track {
+      display: inline-flex;
+      gap: 3rem;
+      animation: marquee 18s linear infinite;
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 0.85rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+    .marquee-track span { opacity: 0.4; }
+    @keyframes marquee {
+      from { transform: translateX(0); }
+      to { transform: translateX(-50%); }
+    }
+
+    /* ── SECTION BASE ── */
+    section { padding: 8rem 4vw; }
+
+    .section-tag {
+      font-size: 0.7rem;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--accent2);
+      margin-bottom: 1rem;
+    }
+
+    h2 {
+      font-family: var(--font-display);
+      font-weight: 800;
+      font-size: clamp(2.2rem, 5vw, 4rem);
+      letter-spacing: -0.025em;
+      line-height: 1.05;
+      margin-bottom: 1.5rem;
+    }
+
+    /* ── ABOUT ── */
+    #about {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6rem;
+      align-items: center;
+    }
+
+    .about-visual {
+      position: relative;
+      aspect-ratio: 4/5;
+      background: var(--mid);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .about-visual::before {
+      content: 'Q';
+      font-family: var(--font-display);
+      font-weight: 800;
+      font-size: 22rem;
+      color: rgba(212,255,0,0.07);
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      line-height: 1;
+    }
+
+    .about-visual-inner {
+      position: absolute;
+      inset: 2rem;
+      border: 1px solid rgba(212,255,0,0.2);
+      border-radius: 2px;
+      display: flex;
+      align-items: flex-end;
+      padding: 2rem;
+    }
+
+    .about-stat {
+      font-family: var(--font-display);
+      font-size: 4rem;
+      font-weight: 800;
+      color: var(--accent);
+      line-height: 1;
+    }
+    .about-stat-label {
+      font-size: 0.8rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-top: 0.3rem;
+    }
+
+    .about-text p {
+      color: rgba(245,242,236,0.65);
+      line-height: 1.8;
+      margin-bottom: 1.2rem;
+      font-size: 1rem;
+    }
+
+    /* ── SERVICES ── */
+    #services { background: var(--mid); }
+
+    .services-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5px;
+      margin-top: 4rem;
+      background: rgba(255,255,255,0.06);
+    }
+
+    .service-card {
+      background: var(--mid);
+      padding: 2.5rem;
+      position: relative;
+      overflow: hidden;
+      transition: background 0.3s;
+    }
+    .service-card:hover { background: #333; }
+
+    .service-num {
+      font-family: var(--font-display);
+      font-size: 0.7rem;
+      color: var(--accent);
+      letter-spacing: 0.15em;
+      margin-bottom: 1.5rem;
+    }
+
+    .service-icon {
+      font-size: 2rem;
+      margin-bottom: 1.2rem;
+    }
+
+    .service-card h3 {
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 1.3rem;
+      margin-bottom: 0.8rem;
+      letter-spacing: -0.01em;
+    }
+
+    .service-card p {
+      font-size: 0.88rem;
+      line-height: 1.7;
+      color: rgba(245,242,236,0.55);
+    }
+
+    .service-card::after {
+      content: '→';
+      position: absolute;
+      bottom: 2rem;
+      right: 2rem;
+      font-size: 1.2rem;
+      color: var(--accent);
+      opacity: 0;
+      transform: translateX(-8px);
+      transition: opacity 0.3s, transform 0.3s;
+    }
+    .service-card:hover::after { opacity: 1; transform: translateX(0); }
+
+    /* ── PROCESS ── */
+    #process {
+      background: var(--black);
+    }
+
+    .process-steps {
+      margin-top: 4rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .process-step {
+      display: grid;
+      grid-template-columns: 80px 1fr 1fr;
+      align-items: start;
+      padding: 2.5rem 0;
+      border-top: 1px solid rgba(255,255,255,0.07);
+      gap: 3rem;
+    }
+
+    .step-num {
+      font-family: var(--font-display);
+      font-weight: 800;
+      font-size: 3rem;
+      color: rgba(212,255,0,0.15);
+      line-height: 1;
+    }
+
+    .step-title {
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 1.4rem;
+      letter-spacing: -0.01em;
+    }
+
+    .step-desc {
+      font-size: 0.9rem;
+      line-height: 1.7;
+      color: rgba(245,242,236,0.55);
+    }
+
+    /* ── PRICING ── */
+    #pricing { background: var(--cream); color: var(--black); }
+    #pricing .section-tag { color: var(--accent2); }
+    #pricing h2 { color: var(--black); }
+
+    .pricing-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+      margin-top: 4rem;
+    }
+
+    .pricing-card {
+      background: var(--black);
+      color: var(--off-white);
+      padding: 2.5rem;
+      border-radius: 4px;
+      position: relative;
+    }
+
+    .pricing-card.featured {
+      background: var(--accent);
+      color: var(--black);
+    }
+
+    .pricing-badge {
+      position: absolute;
+      top: 1.5rem; right: 1.5rem;
+      background: var(--accent2);
+      color: white;
+      font-size: 0.65rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 0.3rem 0.7rem;
+      border-radius: 2px;
+      font-weight: 500;
+    }
+
+    .pricing-card h3 {
+      font-family: var(--font-display);
+      font-size: 1rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 1.5rem;
+      opacity: 0.7;
+    }
+
+    .pricing-price {
+      font-family: var(--font-display);
+      font-weight: 800;
+      font-size: 3rem;
+      letter-spacing: -0.03em;
+      line-height: 1;
+      margin-bottom: 0.3rem;
+    }
+
+    .pricing-price small {
+      font-size: 1rem;
+      font-weight: 400;
+      opacity: 0.5;
+    }
+
+    .pricing-desc {
+      font-size: 0.82rem;
+      opacity: 0.5;
+      margin-bottom: 2rem;
+    }
+
+    .pricing-features {
+      list-style: none;
+      margin-bottom: 2rem;
+    }
+
+    .pricing-features li {
+      font-size: 0.88rem;
+      padding: 0.55rem 0;
+      border-bottom: 1px solid rgba(0,0,0,0.08);
+      display: flex;
+      align-items: center;
+      gap: 0.7rem;
+    }
+
+    .pricing-card:not(.featured) .pricing-features li {
+      border-bottom-color: rgba(255,255,255,0.06);
+    }
+
+    .pricing-features li::before {
+      content: '✓';
+      color: var(--accent);
+      font-weight: 700;
+      font-size: 0.8rem;
+    }
+
+    .pricing-card.featured .pricing-features li::before { color: var(--black); }
+
+    .btn-dark {
+      display: block;
+      text-align: center;
+      background: var(--off-white);
+      color: var(--black);
+      padding: 0.9rem;
+      border-radius: 2px;
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 0.85rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      text-decoration: none;
+      transition: background 0.2s;
+    }
+    .btn-dark:hover { background: var(--cream); }
+
+    .btn-black {
+      display: block;
+      text-align: center;
+      background: var(--black);
+      color: var(--accent);
+      padding: 0.9rem;
+      border-radius: 2px;
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 0.85rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      text-decoration: none;
+      transition: background 0.2s;
+    }
+    .btn-black:hover { background: #111; }
+
+    /* ── CONTACT ── */
+    #contact {
+      background: var(--black);
+    }
+
+    .contact-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6rem;
+      margin-top: 4rem;
+      align-items: start;
+    }
+
+    .contact-info h3 {
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 1.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .contact-info p {
+      color: rgba(245,242,236,0.55);
+      line-height: 1.7;
+      font-size: 0.95rem;
+      margin-bottom: 2.5rem;
+    }
+
+    .contact-detail {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1.2rem;
+    }
+
+    .contact-icon {
+      width: 42px;
+      height: 42px;
+      background: var(--mid);
+      border-radius: 2px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      flex-shrink: 0;
+    }
+
+    .contact-detail-text a,
+    .contact-detail-text span {
+      color: var(--off-white);
+      text-decoration: none;
+      font-size: 0.95rem;
+    }
+
+    .contact-detail-text a:hover { color: var(--accent); }
+
+    .contact-detail-label {
+      font-size: 0.7rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 0.15rem;
+    }
+
+    form { display: flex; flex-direction: column; gap: 1rem; }
+
+    form input, form textarea, form select {
+      background: var(--mid);
+      border: 1px solid rgba(255,255,255,0.07);
+      color: var(--off-white);
+      padding: 1rem 1.2rem;
+      font-family: var(--font-body);
+      font-size: 0.9rem;
+      border-radius: 2px;
+      outline: none;
+      transition: border-color 0.2s;
+      width: 100%;
+      -webkit-appearance: none;
+    }
+
+    form input:focus, form textarea:focus, form select:focus {
+      border-color: var(--accent);
+    }
+
+    form textarea { min-height: 130px; resize: vertical; }
+
+    form input::placeholder, form textarea::placeholder { color: var(--muted); }
+
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+
+    form button {
+      background: var(--accent);
+      color: var(--black);
+      border: none;
+      padding: 1rem;
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 0.9rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      border-radius: 2px;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.2s;
+    }
+    form button:hover { background: #c0e800; transform: translateY(-1px); }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--mid);
+      padding: 3rem 4vw;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
+      border-top: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .footer-logo {
+      font-family: var(--font-display);
+      font-weight: 800;
+      font-size: 1.3rem;
+      color: var(--accent);
+      letter-spacing: -0.02em;
+    }
+    .footer-logo span { color: var(--off-white); }
+
+    footer p {
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+
+    footer a { color: var(--muted); text-decoration: none; }
+    footer a:hover { color: var(--off-white); }
+
+    /* ── ANIMATIONS ── */
+    .fade-in {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+    .fade-in.visible { opacity: 1; transform: none; }
+
+    /* ── MOBILE ── */
+    @media (max-width: 900px) {
+      nav ul { display: none; }
+      #about { grid-template-columns: 1fr; }
+      .about-visual { display: none; }
+      .services-grid { grid-template-columns: 1fr; }
+      .pricing-grid { grid-template-columns: 1fr; }
+      .contact-grid { grid-template-columns: 1fr; gap: 3rem; }
+      .process-step { grid-template-columns: 50px 1fr; }
+      .step-desc { grid-column: 2; }
+      .form-row { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+
+  <nav>
+    <a href="#hero" class="logo">Q<span>dev</span></a>
+    <ul>
+      <li><a href="#about">About</a></li>
+      <li><a href="#services">Services</a></li>
+      <li><a href="#process">Process</a></li>
+      <li><a href="#pricing">Pricing</a></li>
+      <li><a href="#contact" class="nav-cta">Get a Quote</a></li>
+    </ul>
+  </nav>
+
+  
+  <section id="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-label">Web Design & Development Studio — Johannesburg</div>
+    <h1>We Build<br><em>Websites</em><br>That Work.</h1>
+    <p class="hero-sub">Qdev crafts fast, modern websites for small businesses and startups. From landing pages to full web applications — we turn your ideas into digital reality.</p>
+    <div class="hero-actions">
+      <a href="#contact" class="btn-primary">Start a Project</a>
+      <a href="#services" class="btn-outline">View Services</a>
+    </div>
+    <div class="hero-scroll">Scroll</div>
+  </section>
+
+
+  <div class="marquee-wrap">
+    <div class="marquee-track">
+      Web Design <span>✦</span> Development <span>✦</span> E-Commerce <span>✦</span> Landing Pages <span>✦</span> SEO Optimization <span>✦</span> Mobile-First <span>✦</span> Web Design <span>✦</span> Development <span>✦</span> E-Commerce <span>✦</span> Landing Pages <span>✦</span> SEO Optimization <span>✦</span> Mobile-First <span>✦</span> Web Design <span>✦</span> Development <span>✦</span> E-Commerce <span>✦</span> Landing Pages <span>✦</span> SEO Optimization <span>✦</span> Mobile-First <span>✦</span>
+    </div>
+  </div>
+
+  
+  <section id="about">
+    <div class="about-visual fade-in">
+      <div class="about-visual-inner">
+        <div>
+          <div class="about-stat">100%</div>
+          <div class="about-stat-label">Client Satisfaction</div>
+        </div>
+      </div>
+    </div>
+    <div class="about-text fade-in">
+      <div class="section-tag">Who We Are</div>
+      <h2>Small Studio.<br>Big Results.</h2>
+      <p>Qdev is a lean web development studio based in South Africa. We specialise in building clean, high-performing websites for businesses that want to stand out online.</p>
+      <p>We believe every business — no matter the size — deserves a professional digital presence. That's why we offer affordable, transparent packages with no hidden fees and no fluff.</p>
+      <p>From your first call to your launch day, you work directly with us. No middlemen, no delays.</p>
+      <a href="#contact" class="btn-primary" style="margin-top:1rem; display:inline-block;">Let's Talk</a>
+    </div>
+  </section>
+
+  
+  <section id="services">
+    <div class="section-tag">What We Do</div>
+    <h2>Services We Offer</h2>
+    <div class="services-grid">
+      <div class="service-card fade-in">
+        <div class="service-num">01</div>
+        <div class="service-icon">🖥️</div>
+        <h3>Business Websites</h3>
+        <p>Professional multi-page websites built to represent your brand. Includes contact forms, galleries, and everything your business needs online.</p>
+      </div>
+      <div class="service-card fade-in">
+        <div class="service-num">02</div>
+        <div class="service-icon">🚀</div>
+        <h3>Landing Pages</h3>
+        <p>Single-page sites optimised for conversions. Perfect for promotions, product launches, or capturing leads quickly.</p>
+      </div>
+      <div class="service-card fade-in">
+        <div class="service-num">03</div>
+        <div class="service-icon">🛒</div>
+        <h3>E-Commerce Stores</h3>
+        <p>Online shops that make it easy for your customers to browse and buy. We set up your products, payments, and delivery options.</p>
+      </div>
+      <div class="service-card fade-in">
+        <div class="service-num">04</div>
+        <div class="service-icon">📱</div>
+        <h3>Mobile-First Design</h3>
+        <p>Every site we build looks and performs beautifully on phones, tablets, and desktops. No compromises on any screen size.</p>
+      </div>
+      <div class="service-card fade-in">
+        <div class="service-num">05</div>
+        <div class="service-icon">🔍</div>
+        <h3>SEO Basics</h3>
+        <p>We build your site with search engine visibility in mind — proper meta tags, fast loading, and clean code that Google loves.</p>
+      </div>
+      <div class="service-card fade-in">
+        <div class="service-num">06</div>
+        <div class="service-icon">🔧</div>
+        <h3>Maintenance & Updates</h3>
+        <p>Need changes after launch? We offer ongoing maintenance packages so your site stays fresh, secure, and up to date.</p>
+      </div>
+    </div>
+  </section>
+
+  
+  <section id="process">
+    <div class="section-tag">How It Works</div>
+    <h2>Our Process</h2>
+    <div class="process-steps">
+      <div class="process-step fade-in">
+        <div class="step-num">01</div>
+        <div class="step-title">Discovery Call</div>
+        <div class="step-desc">We start with a quick chat to understand your business, goals, and what you need from your website. No pressure — just a conversation.</div>
+      </div>
+      <div class="process-step fade-in">
+        <div class="step-num">02</div>
+        <div class="step-title">Design & Quote</div>
+        <div class="step-desc">We put together a clear proposal with pricing and a timeline. You'll know exactly what you're getting before we start.</div>
+      </div>
+      <div class="process-step fade-in">
+        <div class="step-num">03</div>
+        <div class="step-title">Build & Review</div>
+        <div class="step-desc">We build your site and share previews for your feedback. We refine until you're happy — we don't move on until it's right.</div>
+      </div>
+      <div class="process-step fade-in">
+        <div class="step-num">04</div>
+        <div class="step-title">Launch 🚀</div>
+        <div class="step-desc">Your site goes live. We handle the technical side — hosting, domain setup, and a final round of testing across all devices.</div>
+      </div>
+    </div>
+  </section>
+
+  
+  <section id="pricing">
+    <div class="section-tag">Transparent Pricing</div>
+    <h2>Simple, Honest Packages</h2>
+    <div class="pricing-grid">
+      <div class="pricing-card fade-in">
+        <h3>Starter</h3>
+        <div class="pricing-price">R1 000<small>/once-off</small></div>
+        <p class="pricing-desc">Perfect for small businesses getting started online.</p>
+        <ul class="pricing-features">
+          <li>1-Page Landing Site</li>
+          <li>Mobile Responsive</li>
+          <li>Contact Form</li>
+          <li>Basic SEO Setup</li>
+          <li>7-Day Delivery</li>
+        </ul>
+        <a href="#contact" class="btn-dark">Get Started</a>
+      </div>
+      <div class="pricing-card featured fade-in">
+        <div class="pricing-badge">Most Popular</div>
+        <h3>Business</h3>
+        <div class="pricing-price">R2 500<small>/once-off</small></div>
+        <p class="pricing-desc">A complete website for growing businesses.</p>
+        <ul class="pricing-features">
+          <li>Up to 5 Pages</li>
+          <li>Mobile Responsive</li>
+          <li>Contact & Quote Forms</li>
+          <li>SEO Optimised</li>
+          <li>Google Maps Embed</li>
+          <li>Social Media Links</li>
+          <li>14-Day Delivery</li>
+        </ul>
+        <a href="#contact" class="btn-black">Get Started</a>
+      </div>
+      <div class="pricing-card fade-in">
+        <h3>E-Commerce</h3>
+        <div class="pricing-price">R5 500<small>/once-off</small></div>
+        <p class="pricing-desc">Full online store ready to take orders.</p>
+        <ul class="pricing-features">
+          <li>Full Online Store</li>
+          <li>Up to 20 Products</li>
+          <li>Payment Gateway</li>
+          <li>Order Management</li>
+          <li>Mobile Responsive</li>
+          <li>SEO Optimised</li>
+          <li>21-Day Delivery</li>
+        </ul>
+        <a href="#contact" class="btn-dark">Get Started</a>
+      </div>
+    </div>
+    <p style="text-align:center; margin-top:2rem; font-size:0.85rem; color:var(--muted);">All prices exclude hosting & domain. Need something custom? <a href="#contact" style="color:var(--accent2);">Contact us.</a></p>
+  </section>
+
+  
+  <section id="contact">
+    <div class="section-tag">Get In Touch</div>
+    <h2>Let's Build<br>Something Great.</h2>
+    <div class="contact-grid">
+      <div class="contact-info fade-in">
+        <h3>Ready to get started?</h3>
+        <p>Reach out today and we'll get back to you within 24 hours. Whether you have a clear vision or just an idea — we're here to help.</p>
+
+        <div class="contact-detail">
+          <div class="contact-icon">📞</div>
+          <div class="contact-detail-text">
+            <div class="contact-detail-label">Phone / WhatsApp</div>
+            <a href="tel:0762917475">076 291 7475</a>
+          </div>
+        </div>
+
+        <div class="contact-detail">
+          <div class="contact-icon">✉️</div>
+          <div class="contact-detail-text">
+            <div class="contact-detail-label">Email</div>
+            <a href="/cdn-cgi/l/email-protection#a9eac8dbcec6cfc5ccd19d9fe9cec4c8c0c587cac6c4"><span class="__cf_email__" data-cfemail="87c4e6f5e0e8e1ebe2ffb3b1c7e0eae6eeeba9e4e8ea">[email&#160;protected]</span></a>
+          </div>
+        </div>
+
+        <div class="contact-detail">
+          <div class="contact-icon">📍</div>
+          <div class="contact-detail-text">
+            <div class="contact-detail-label">Location</div>
+            <span>South Africa</span>
+          </div>
+        </div>
+      </div>
+
+      <form class="fade-in" onsubmit="handleSubmit(event)">
+        <div class="form-row">
+          <input type="text" placeholder="Your Name" required />
+          <input type="email" placeholder="Your Email" required />
+        </div>
+        <input type="tel" placeholder="Phone Number" />
+        <select>
+          <option value="" disabled selected>Select a Service</option>
+          <option>Starter Landing Page</option>
+          <option>Business Website</option>
+          <option>E-Commerce Store</option>
+          <option>Website Maintenance</option>
+          <option>Custom Project</option>
+        </select>
+        <textarea placeholder="Tell us about your project..."></textarea>
+        <button type="submit">Send Message →</button>
+      </form>
+    </div>
+  </section>
+
+  
+  <footer>
+    <div class="footer-logo">Q<span>dev</span></div>
+    <p>© 2025 Qdev. All rights reserved.</p>
+    <div style="display:flex; gap:1.5rem;">
+      <a href="tel:0762917475">076 291 7475</a>
+      <a href="/cdn-cgi/l/email-protection#11527063767e777d7469252751767c70787d3f727e7c"><span class="__cf_email__" data-cfemail="0d4e6c7f6a626b616875393b4d6a606c6461236e6260">[email&#160;protected]</span></a>
+    </div>
+  </footer>
+
+  <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) e.target.classList.add('visible');
+      });
+    }, { threshold: 0.1 });
+    document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+
+    function handleSubmit(e) {
+      e.preventDefault();
+      const form = e.target;
+      const name    = form.querySelector('input[type="text"]').value.trim();
+      const email   = form.querySelector('input[type="email"]').value.trim();
+      const phone   = form.querySelector('input[type="tel"]').value.trim();
+      const service = form.querySelector('select').value;
+      const message = form.querySelector('textarea').value.trim();
+
+      const emailSubject = encodeURIComponent('Qdev Enquiry from ' + name);
+      const emailBody = encodeURIComponent(
+        'Name: ' + name + '\nEmail: ' + email + '\nPhone: ' + (phone || 'Not provided') +
+        '\nService: ' + (service || 'Not selected') + '\n\nMessage:\n' + message
+      );
+      window.open('mailto:Cargoflex46@gmail.com?subject=' + emailSubject + '&body=' + emailBody, '_blank');
+
+      const waText = encodeURIComponent(
+        'Hi Qdev! New Website Enquiry\n\nName: ' + name +
+        '\nEmail: ' + email +
+        '\nPhone: ' + (phone || 'Not provided') +
+        '\nService: ' + (service || 'Not selected') +
+        '\n\nMessage:\n' + message
+      );
+      setTimeout(() => window.open('https://wa.me/27762917475?text=' + waText, '_blank'), 600);
+
+      const btn = form.querySelector('button');
+      btn.textContent = 'Opening Email & WhatsApp...';
+      btn.style.background = '#2ecc71';
+      setTimeout(() => {
+        btn.textContent = 'Send Message';
+        btn.style.background = '';
+        form.reset();
+      }, 4000);
+    }
+  </script><script>
+    
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.classList.add('visible');
+        }
+      });
+    }, { threshold: 0.1 });
+
+    document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+
+  
